@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define INF 1e9
+#define MAX_N 16
+
+int n;
+int dist[MAX_N][MAX_N];
+int memo[1 << MAX_N][MAX_N];
+
+
+int min(int a, int b) {
+    return (a < b) ? a : b;
+}
+
+
+int tsp(int mask, int u) {
+
+    if (mask == (1 << n) - 1) {
+        return (dist[u][0] != -1) ? dist[u][0] : INF;
+    }
+
+    
+    if (memo[mask][u] != -1) {
+        return memo[mask][u];
+    }
+
+    int res = INF;
+
+   
+    for (int v = 0; v < n; v++) {
+        if (!(mask & (1 << v)) && dist[u][v] != -1) {
+            res = min(res, dist[u][v] + tsp(mask | (1 << v), v));
+        }
+    }
+
+    return memo[mask][u] = res;
+}
+
+int main() {
+    
+    if (scanf("%d", &n) != 1) return 0;
+
+    
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &dist[i][j]);
+        }
+    }
+
+    
+    for (int i = 0; i < (1 << n); i++) {
+        for (int j = 0; j < n; j++) {
+            memo[i][j] = -1;
+        }
+    }
+
+    
+    int ans = tsp(1, 0);
+
+    
+    printf("%d\n", ans);
+
+    return 0;
+}
+
